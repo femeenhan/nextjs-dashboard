@@ -1,4 +1,5 @@
 import { fetchCardData } from '@/app/lib/data';
+import { Button } from '@/app/ui/button';
 import { Card } from '@/app/ui/dashboard/cards';
 import { lusitana } from '@/app/ui/fonts';
 

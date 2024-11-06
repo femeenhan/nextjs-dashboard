@@ -8,7 +8,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className={pretendard.className}>{children}</body>
+      <body className={pretendard.className}>
+        <header>header</header>
+        {children}
+        <footer>footer</footer>
+      </body>
     </html>
   );
 }
