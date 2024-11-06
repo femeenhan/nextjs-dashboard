@@ -9,10 +9,7 @@ import { Suspense } from 'react';
 export default async function InvoicePage({
   searchParams,
 }: {
-  searchParams?: {
-    query?: string;
-    page?: string;
-  };
+  searchParams?: Promise<any>;
 }) {
   const params = await searchParams;
   const query = params?.query || '';
