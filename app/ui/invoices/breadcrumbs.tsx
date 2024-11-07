@@ -2,11 +2,12 @@ import { clsx } from 'clsx';
 import Link from 'next/link';
 import { lusitana } from '@/app/ui/fonts';
 
-interface Breadcrumb {
+// interface 보다 넓은 범위에서 type을 사용하는게 낫다
+type Breadcrumb = {
   label: string;
   href: string;
   active?: boolean;
-}
+};
 
 export default function Breadcrumbs({
   breadcrumbs,
@@ -21,7 +22,7 @@ export default function Breadcrumbs({
             key={breadcrumb.href}
             aria-current={breadcrumb.active}
             className={clsx(
-              breadcrumb.active ? 'text-gray-900' : 'text-gray-500',
+              breadcrumb.active ? 'text-gray-900' : 'text-gray-500'
             )}
           >
             <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
