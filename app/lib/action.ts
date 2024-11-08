@@ -3,6 +3,8 @@ import { sql } from '@vercel/postgres';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 // 양식 스키마(구조) 정의, enum 열거형
 const FormSchema = z.object({
@@ -50,17 +52,54 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   const amountInCents = amount * 100;
 
-  await sql`
+  try {
+    await sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}
   `;
+  } catch (e) {
+    return { message: 'Database Error: Failed to Update Invoice.' };
+  }
 
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/invoices');
+  // 오류 페이지 테스트를 위해 임시로 추가, 테스트후 주석처리해야함
+  // throw new Error('Failed to Delete Invoice');
+
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath('/dashboard/invoices');
+    return { message: 'Deleted Invoice.' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Invoice.' };
+  }
+}
+
+// 로그인폼과 연결할 인증함수
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    // 자격증명사용하여 로그인 시도
+    await signIn('credentials', formData);
+  } catch (error) {
+    // error객체가 AuthError의 인스턴스이면
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          // 잘못된 자격증명
+          return 'Invalid credentials.';
+        default:
+          // 그외의 오류(이메일, 비밀번호 틀린 경우)
+          return 'Something went wrong.';
+      }
+    }
+    // 인증오류가 아닌경우 error객체 던짐
+    throw error;
+  }
 }

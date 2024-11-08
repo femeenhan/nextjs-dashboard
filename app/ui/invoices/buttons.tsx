@@ -35,7 +35,7 @@ export function DeleteInvoice({ id }: { id: string }) {
 
     if (confirm('삭제하시겠습니까?')) {
       const result = await deleteInvoiceWithId();
-      console.log(result);
+      console.log(result.message);
     }
   }
 
